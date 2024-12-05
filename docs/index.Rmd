@@ -1,29 +1,86 @@
 ---
 title: "Professional Project"
 author: "Kiersten Bickmore"
-output: html_document
+output:
+  html_document:
+    theme: flatly
+    toc: true
+    toc_float: true
+    highlight: zenburn
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(pander)
+library(scales)
+
+movies <- read_csv("~/Fall 2024/Professional Projects/Data/movies.csv")
 ```
 
-## R Markdown
+##  {.tabset .tabset-pills .tabset-fade}
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+### Introduction
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+For my project, I decided to complete two different analysis on topics that I am passionate about. The first analysis is under the "Movies" tab below where I collected data for many different movies. The second analysis is where I created a weather predicting model, in which I collected data
 
-```{r cars}
-summary(cars)
+### Movies
+
+Movies have almost always been a go to topic to get conversations started, especially when meeting someone for the first time. It helps get a grasp on what others might be interested in, as well as possible movie recommendations. As I collected data for this, I tried to stick to more well known movies, but included movies from varying genres and ratings (G, PG, PG-13, R). Included in the data are 40 movies from each chosen genre, what each movie is rated, the audience score the movie has, and the success it had at the box office with it's worldwide gross.
+
+
+
+
+#### **Rating VS Box Office**
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+movies <- movies %>%
+  mutate(gross = as.numeric(gsub("[^0-9]", "", gross)))
+
+RatingMean <- movies %>% 
+  group_by(rating) %>% 
+  summarise(avg = mean(gross, na.rm = TRUE)) 
+
+ggplot(RatingMean, aes(x = rating, y = avg, fill = rating))+
+  geom_bar(stat = "identity", color = "black")+
+    geom_text(aes(label = scales::dollar(avg)), vjust = -0.5, size = 3) + 
+  scale_y_continuous(labels = scales::dollar_format()) +
+  labs(
+    title = "Average Gross by Movie Rating",
+    x = "Movie Rating",
+    y = "Average Gross (USD)",
+    fill = "Rating") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))
+
 ```
 
-## Including Plots
+```{r}
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(movies, aes(x = factor(rating), y = gross))+
+  geom_dotplot(binaxis = "y", stackdir = "up", position = "dodge", dotsize = 0.5)+
+   ylim(0, 500000000)+
+  labs(
+    title = "Worldwide Gross Success by Rating",
+    x = "Movie Rating",
+    y = "Worldwide Gross at the Box Office (USD)")+
+    theme_minimal()
+
+```
+
+
+
+#### **Audience Score VS Box Office**
+
+
+#### **Genre VS Box Office**
+
+
+##
+
