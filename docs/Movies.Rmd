@@ -43,24 +43,7 @@ movies <- movies %>%
 GenreMean <- movies %>% 
   group_by(genre) %>% 
   summarise(avg = mean(gross, na.rm = TRUE)) 
-
-ggplot(GenreMean, aes(x = genre, y = avg, fill = genre))+
-  geom_bar(stat = "identity", color = "black", show.legend = FALSE)+
-  geom_text(aes(label = scales::dollar(avg)), vjust = -0.5, size = 2) + 
-  scale_y_continuous(labels = scales::dollar_format()) +
-  scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) + 
-  labs(
-    title = "Average Gross by Genre",
-    x = "Movie Genre",
-    y = "Average Gross (USD)",
-    fill = "Genre") +
-  theme_minimal() +
-  theme(
-    axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))
-  
 ```
-The first thing I wanted to compare between the movie genres and the box office is which movie genre, based on the average, made the most worldwide gross. In order to do this, I grouped each of the movies by genre and calculated the average gross for each genre. The chart above shows this comparison, with the average gross of each genre labeled right above each bar. Just from looking at the graph, it can be seen that the movie genre that does the best in the box office, by quite a bit, is Action, with an average gross of $643,212,996. This is $238,198,207 more compared to the next highest movie genre of Musical, which has an average gross of $405,014,789. The lowest average gross that a movie genre has is the Horror genre, with an average gross of only $143,374,851. This is not necessarily surprising, as horror movies appeal to a much smaller group of people and action movies appeal to a broader group.
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -78,22 +61,8 @@ ggplot(movies, aes(x = genre, y = gross, fill = genre)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
+As I started looking at my findings and figuring out how I could compare a movie's genre to how well it did at the box office, I decided to create a box plot graphic. Box plots are great when wanting to compare the distribution of things such as this. From looking at the above box plots, we can determine that a majority of movies within a genre tend to make less that $1,000,000,000 in worldwide gross. It can also be seen that there are a few outliers in a couple genres that make more than the rest, like three movies reaching over $2,000,000,000 in worldwide gross for Action, Drama, and Science Fiction.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-movies_by_genre <- movies %>%
-  group_by(genre) %>%
-  summarise(total_gross = sum(gross, na.rm = TRUE)) %>%
-  ungroup()
-
-ggplot(movies_by_genre, aes(area = total_gross, fill = genre, label = genre)) +
-  geom_treemap(show.legend = FALSE) +
-  geom_treemap_text(fontface = "bold", color = "white", place = "centre") +
-  scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) +
-  labs(
-    title = "Proportion of Total Gross Earnings by Genre"
-  ) +
-  theme_minimal()
-```
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -113,6 +82,56 @@ ggplot(movies, aes(x = genre, y = gross, fill = genre)) +
 
 ```
 
+In the graph above, I decided to use a violin graph to show the distribution along with the above box plots. Violin graphs, while similar to box plots, use density curves in order to show the frequency of data points in each group. In this case, the graphic is showing the frequency of worldwide gross within each movie genre, the wider the density curve, the more frequent that worldwide gross was in that genre. Based on what we see, some of the genres are more spread out in the success they had at the box office, including Action and Science Fiction. While these genres have frequency that is more spread out, most movies within the Action and Science Fiction genres earned less than $1,000,000,000. In fact, a majority of the genres have a higher frequency of earning less than $1,000,000,000.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+movies_by_genre <- movies %>%
+  group_by(genre) %>%
+  summarise(total_gross = sum(gross, na.rm = TRUE)) %>%
+  ungroup()
+
+ggplot(movies_by_genre, aes(area = total_gross, fill = genre, label = genre)) +
+  geom_treemap(show.legend = FALSE) +
+  geom_treemap_text(fontface = "bold", color = "white", place = "centre") +
+  scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) +
+  labs(
+    title = "Proportion of Total Gross Earnings by Genre"
+  ) +
+  theme_minimal()
+```
+
+The treemap graph above shows the proportion of worldwide gross earnings by movie genre, which was able to give me a visual representation of how each genre contributes to overall box office success. Larger sections indicate a higher amount of total gross earning. The two genres that have the largest sections are Action and Science Fiction, showing that these two genres have the highest worldwide gross earnings This indicates their appeal and consistent performance at the box office. In contrast, smaller sections, like Horror and Romance, suggest these genres earn comparatively less, potentially due to niche audiences or smaller production scales. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+movies <- movies %>%
+  mutate(gross = as.numeric(gsub("[^0-9]", "", gross)))
+
+GenreMean <- movies %>% 
+  group_by(genre) %>% 
+  summarise(avg = mean(gross, na.rm = TRUE)) 
+
+ggplot(GenreMean, aes(x = genre, y = avg, fill = genre))+
+  geom_bar(stat = "identity", color = "black", show.legend = FALSE)+
+  geom_text(aes(label = scales::dollar(avg)), vjust = -0.5, size = 2) + 
+  scale_y_continuous(labels = scales::dollar_format()) +
+  scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) + 
+  labs(
+    title = "Average Gross by Genre",
+    x = "Movie Genre",
+    y = "Average Gross (USD)",
+    fill = "Genre") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))
+  
+```
+The final thing I wanted to do in order to compare the movie genres and the box office is figure out which movie genre, based on the average, made the most worldwide gross. In order to do this, I grouped each of the movies by genre and calculated the average gross for each genre. The chart above shows this comparison, with the average gross of each genre labeled right above each bar. Just from looking at the graph, it can be seen that the movie genre that does the best in the box office, by quite a bit, is Action, with an average gross of $643,212,996. This is $238,198,207 more compared to the next highest movie genre of Musical, which has an average gross of $405,014,789. The lowest average gross that a movie genre has is the Horror genre, with an average gross of only $143,374,851. This is not necessarily surprising, as horror movies appeal to a much smaller group of people and action movies appeal to a broader group.
+
+#### **Conclusion**
+
+ Action movies have some of the higher grossing movies within its genre, as seen from the box plots and violin graph, and the frequency of how much worldwide gross Action movies had is more spread out, reaching into the higher grossing areas. Based on the genre's average worldwide gross of $643,212,996, it can be assumed that more people were willing to pay money to see Action movies more than any other genre. Based on the success at the box office, it seems as though the Action genre is a go to for many people.
+
 
 
 
@@ -122,22 +141,6 @@ ggplot(movies, aes(x = genre, y = gross, fill = genre)) +
 Something that many people go off of on whether they want to see a movie or not is how other people have rated it. IMDb is a great place to view these audience ratings as they are up to date with new reviews from people still watching these movies and old reviews from past watching sessions people have had. These audience scores are out of 10 and many people look for scores higher to decide whether a certain movie might be worth the time to watch. Since audience scores can be a big part of how likely a person will choose to watch a movie, I wanted to compare audience scores to how well they do at the box office with their worldwide gross. 
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(movies, aes(x = gross, y = audience, color = genre)) + 
-  geom_point(alpha = 0.7) + 
-  scale_x_continuous(labels = scales::dollar_format()) +
-  scale_size_continuous(range = c(1, 10)) +
-  scale_color_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7", "#609E60", "#a0c4ff", "#8CE68C", "#68807B", "#DFF8EB")) +
-  labs(
-    title = "Audience Score vs Worldwide Gross (Bubble Size = Budget)", 
-    x = "Worldwide Gross (USD)", 
-    y = "Audience Score", 
-    size = "Budget (USD)", 
-    color = "Genre") +
-  theme_minimal()
-
-
-```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(movies, aes(x = genre, y = audience, fill = genre)) + 
@@ -152,20 +155,29 @@ ggplot(movies, aes(x = genre, y = audience, fill = genre)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-movies <- movies %>%
-  mutate(gross = as.numeric(gsub("[^0-9]", "", gross)))
 
-ggplot(movies, aes(y = audience, x = gross)) + 
-  geom_point(color = "#56c6c6", pch = 18) + 
+One of the things that I thought would be interesting to first compare was actually how well each genre of movie did based on the audience score. By using a violin graph, I was able to show that range of audience ratings for each genre on a scale of 1 to 10. It can be seen that some genres have a smaller spread, meaning that the ratings within that genre are more consistent. This can be seen through genres such as Animated, Comedy, and Drama. Genres, like Fantasy, Horror, and Musical, have more spread out ratings, meaning they are not always consistent in the scores they get as some movies are rated very low and others very high.  
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(movies, aes(x = gross, y = audience, color = genre)) + 
+  geom_point(alpha = 0.7) +
   geom_smooth(method = "lm", color = "black", se = FALSE) +
   scale_x_continuous(labels = scales::dollar_format()) +
+  scale_size_continuous(range = c(1, 10)) +
+  scale_color_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7", "#609E60", "#a0c4ff", "#8CE68C", "#68807B", "#DFF8EB")) +
   labs(
-    title = "Correlation of Audience Score and Worldwide Gross", 
+    title = "Audience Score vs Worldwide Gross", 
+    x = "Worldwide Gross (USD)", 
     y = "Audience Score", 
-    x = "Worldwide Gross (USD)") +
+    size = "Budget (USD)", 
+    color = "Genre") +
   theme_minimal()
+```
 
+This second graph compares that audience scores with a movie's worldwide gross earnings. Each dot on this graph represents a single movie, with different colors representing the different genres. To show the overall pattern and correlation between the audience score and worldwide gross, I added a trendline. The trendline shows that there is a correlation between these two factors, as movies with higher audience scores tend to have higher gross earnings, however, it is not a very strong relationship. There are still several movies with fairly average audience scores that still do well at the box office. 
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(movies, aes(y = audience, x = gross)) + 
   geom_point(color = "#609E60", pch = 18) + 
   geom_smooth(method = "lm", color = "black", se = FALSE) + 
@@ -179,10 +191,53 @@ ggplot(movies, aes(y = audience, x = gross)) +
 
 ```
 
+For this last graph, I wanted to take a closer look at the relationship between audience scores and worldwide gross earnings by viewing the gross on a logarithmic scale. Similar to the previous graph, each dot represents a single movie and the trendline shows the overall correlation between the two factors. Again, there is a slight positive trend, showing that movies with higher audience scores tend to have a higher worldwide gross, but the  relationship is still relatively weak. Using the log scale helps to see a pattern across the wide range of earnings, but with a more zoomed in perspective. It is able to show that some of the lower earning movies can still have higher audience rating and some of the higher grossing movies are not always going to be the highest rated by audience scores.
+
+#### **Conclusion**
+
+In looking at the relationship between audience scores, movie genres, and worldwide gross earnings, we can see how these factors interact in meaningful ways. As we compared the different genres to audience scores, we can see that different genres show unique distributions of audience ratings, showing that there is a lot of diversity in what people prefer to watch and the expectations they have through the scores they give. Based on the correlation that was shown in the trendlines, it can be concluded that audience scores provide valuable insight into how viewers perceive movies. While higher scores often correlate with greater box office success, the relationship is not absolute. 
+
+
 ### Rating
 #### **Rating VS Box Office**
+Something that is important to many people when looking at a movie is what the movie is rated, whether is rated G, PG, PG-13, or R. For example, people with children will look to make sure a movie is appropriate to take their kids to and will mainly try to stick to movies rated G and PG. Another example is when people look to avoid certain content and may only look to watch movies rated PG-13 and lower. I was curious to see how and if this would effect the success movies would have at the box office based on the worldwide gross each rating brought in.
 
 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(movies, aes(x = factor(rating), y = gross))+
+  geom_dotplot(binaxis = "y", stackdir = "up", position = "dodge", dotsize = 0.35)+
+  scale_y_continuous(
+    labels = scales::dollar_format(),
+    limits = c(0, 1500000000)) +
+  labs(
+    title = "Worldwide Gross Success by Rating",
+    x = "Movie Rating",
+    y = "Worldwide Gross at the Box Office (USD)")+
+    theme_minimal()
+
+```
+
+This first graph above shows the distribution of worldwide gross earnings by the rating of movies. Each dot represents a single movie and is placed in certain spots based on its worldwide gross. I did decide to cap the worldwide gross to $1,500,000,000 for clarity. It can be seen that, while movies rated PG and PG-13 tend to end up in the higher end of the worldwide gross spectrum, R-rated movies, despite their restricted audience, can also achieve significant financial success. On the other side of the scale, G-rated movies appear to have fewer entries in the highest-grossing range, reflecting their niche audience appeal. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(movies, aes(x = genre, y = gross, fill = genre)) +
+  geom_bar(stat = "identity", position = "dodge", show.legend = FALSE) +
+  scale_y_continuous(labels = scales::dollar_format()) +
+  facet_wrap(~ rating, scales = "free_x") +
+  scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) +
+  labs(
+    title = "Gross Earnings by Genre and Rating",
+    x = "Movie Genre",
+    y = "Gross Earnings (USD)",
+    fill = "Genre"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+The above graphic shows the relationship between worldwide gross earnings by genre within each rating category. Through this, we are able to see some unique patterns within the ratings of movies, seeing the types of genres seen in within each rating category. PG-13 movies demonstrate significant diversity across genres, with Action and Science Fiction movies achieving the highest worldwide gross earnings. PG-rated movies can be seen to excel in the Animated and Musical genres, both genres generally leaning towards the family friendly category. The graph also shows that there is a limited amount of G-rated movies compared to the other rating categories. Overall, this graphic gives a detailed comparison between genre, rating, and box office success. 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 movies <- movies %>%
@@ -209,37 +264,10 @@ ggplot(RatingMean, aes(x = rating, y = avg, fill = rating))+
 
 ```
 
+The final graph I decided to do was bar chart showing the average worldwide gross for each of the rating category. The bars represent the average gross earnings and the labels above each bar give the exact average worldwide gross for each movie rating category. Just from looking at the graph, we can see that PG-13 movies have the highest average worldwide gross, with the gross being $413,992,845. The second highest movie rating are PG-rated, with an average gross of $360,544,114. With both these ratings being at the top, it shows that there is a broader appeal for more people to see them compared to movies rated G or R. 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(movies, aes(x = factor(rating), y = gross))+
-  geom_dotplot(binaxis = "y", stackdir = "up", position = "dodge", dotsize = 0.3)+
-   ylim(0, 1000000000)+
-  scale_y_continuous(labels = scales::dollar_format()) +
-  labs(
-    title = "Worldwide Gross Success by Rating",
-    x = "Movie Rating",
-    y = "Worldwide Gross at the Box Office (USD)")+
-    theme_minimal()
-
-```
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(movies, aes(x = genre, y = gross, fill = genre)) +
-  geom_bar(stat = "identity", position = "dodge", show.legend = FALSE) +
-  scale_y_continuous(labels = scales::dollar_format()) +
-  facet_wrap(~ rating, scales = "free_x") +
-  scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) +
-  labs(
-    title = "Gross Earnings by Genre and Rating",
-    x = "Movie Genre",
-    y = "Gross Earnings (USD)",
-    fill = "Genre"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-```
-
+#### **Conclusion**
+This analysis of comparing movie ratings and their relationship to box office success shows that there are patterns between the two factors. Movies rated PG and PG-13 generally perform well in how much they bring in with worldwide gross earnings, with PG-13 movies generally bringing in the most, particularly in Action and Science Fiction. In contrast, G-rated movies have a narrower audience and amount of movies in general, while R-rated movies, despite their restricted audience, can still achieve significant box office performance. Overall, the average gross earnings further highlight that PG-13 and PG movies tend to attract larger audiences, contributing to their higher financial success compared to G or R-rated movies.
 
 ### Data
 ```{r echo=FALSE, message=FALSE, warning=FALSE}

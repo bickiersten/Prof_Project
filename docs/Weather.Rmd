@@ -130,6 +130,8 @@ ggplot(avgmonthprecip, aes(x = month_name, y = meanprecip))+
   scale_color_manual(
     values = c("Line" = "#5F9EA0", "Points" = "black"))
 ```
+
+
 ### Predictor
 
 
@@ -149,20 +151,10 @@ mylm <- lm(templag ~ dewlag + sealag, data = IFweatherlag)
 summary(mylm) %>% 
   pander()
 
-
-recent_data <- tail(IFweather, 3)
-
-new_data <- data.frame(
-  templag = recent_data$avgtemp[3],  
-  dewlag = recent_data$dew[3],
-  sealag = recent_data$sea[3])
-
-predicted_temp <- predict(mylm, newdata = new_data)
-print(predicted_temp) %>% 
-  pander()
-
-
 ```
+
+
+
 $$
   \underbrace{\hat{Y}_i}_\text{Predicted Temp} = \overbrace{-36.37}^\text{est. y-int} + {1.357} \underbrace{X_i}_\text{Dew Point} + {1.595}\underbrace{X_i}_\text{Sea Level Pressure}
 $$
