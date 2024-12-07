@@ -16,6 +16,8 @@ library(scales)
 library(DT) 
 library(mosaic)
 library(treemapify)
+library(patchwork)
+
 
 
 movies <- read_csv("~/Fall 2024/Professional Projects/Data/movies.csv")
@@ -43,10 +45,10 @@ GenreMean <- movies %>%
   summarise(avg = mean(gross, na.rm = TRUE)) 
 
 ggplot(GenreMean, aes(x = genre, y = avg, fill = genre))+
-  geom_bar(stat = "identity", color = "black")+
+  geom_bar(stat = "identity", color = "black", show.legend = FALSE)+
   geom_text(aes(label = scales::dollar(avg)), vjust = -0.5, size = 2) + 
   scale_y_continuous(labels = scales::dollar_format()) +
-    scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) + 
+  scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) + 
   labs(
     title = "Average Gross by Genre",
     x = "Movie Genre",
@@ -63,7 +65,7 @@ The first thing I wanted to compare between the movie genres and the box office 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(movies, aes(x = genre, y = gross, fill = genre)) +
-  geom_boxplot() +
+  geom_boxplot(show.legend = FALSE) +
   scale_y_continuous(labels = scales::dollar_format()) +
   scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) +
   labs(
@@ -84,7 +86,7 @@ movies_by_genre <- movies %>%
   ungroup()
 
 ggplot(movies_by_genre, aes(area = total_gross, fill = genre, label = genre)) +
-  geom_treemap() +
+  geom_treemap(show.legend = FALSE) +
   geom_treemap_text(fontface = "bold", color = "white", place = "centre") +
   scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) +
   labs(
@@ -97,7 +99,7 @@ ggplot(movies_by_genre, aes(area = total_gross, fill = genre, label = genre)) +
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
 ggplot(movies, aes(x = genre, y = gross, fill = genre)) +
-  geom_violin(trim = FALSE) +
+  geom_violin(trim = FALSE, show.legend = FALSE) +
   scale_y_continuous(labels = scales::dollar_format()) +
   scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) +
   labs(
@@ -117,8 +119,65 @@ ggplot(movies, aes(x = genre, y = gross, fill = genre)) +
 ### Audience Score
 #### **Audience Scores VS Box Office**
 
-Something that many people go off of on whether they want to see a movie or not is how other people have rated it. 
+Something that many people go off of on whether they want to see a movie or not is how other people have rated it. IMDb is a great place to view these audience ratings as they are up to date with new reviews from people still watching these movies and old reviews from past watching sessions people have had. These audience scores are out of 10 and many people look for scores higher to decide whether a certain movie might be worth the time to watch. Since audience scores can be a big part of how likely a person will choose to watch a movie, I wanted to compare audience scores to how well they do at the box office with their worldwide gross. 
 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(movies, aes(x = gross, y = audience, color = genre)) + 
+  geom_point(alpha = 0.7) + 
+  scale_x_continuous(labels = scales::dollar_format()) +
+  scale_size_continuous(range = c(1, 10)) +
+  scale_color_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7", "#609E60", "#a0c4ff", "#8CE68C", "#68807B", "#DFF8EB")) +
+  labs(
+    title = "Audience Score vs Worldwide Gross (Bubble Size = Budget)", 
+    x = "Worldwide Gross (USD)", 
+    y = "Audience Score", 
+    size = "Budget (USD)", 
+    color = "Genre") +
+  theme_minimal()
+
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(movies, aes(x = genre, y = audience, fill = genre)) + 
+  geom_violin(trim = FALSE, alpha = 0.7, show.legend = FALSE) + 
+  scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) +
+  labs(
+    title = "Audience Score Distribution by Genre", 
+    x = "Genre", 
+    y = "Audience Score", 
+    fill = "Genre") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+movies <- movies %>%
+  mutate(gross = as.numeric(gsub("[^0-9]", "", gross)))
+
+ggplot(movies, aes(y = audience, x = gross)) + 
+  geom_point(color = "#56c6c6", pch = 18) + 
+  geom_smooth(method = "lm", color = "black", se = FALSE) +
+  scale_x_continuous(labels = scales::dollar_format()) +
+  labs(
+    title = "Correlation of Audience Score and Worldwide Gross", 
+    y = "Audience Score", 
+    x = "Worldwide Gross (USD)") +
+  theme_minimal()
+
+ggplot(movies, aes(y = audience, x = gross)) + 
+  geom_point(color = "#609E60", pch = 18) + 
+  geom_smooth(method = "lm", color = "black", se = FALSE) + 
+  scale_x_log10(labels = scales::dollar_format()) + 
+  labs(
+    title = "Correlation of Audience Score and Worldwide Gross (Log Scale)", 
+    y = "Audience Score", 
+    x = "Log of Worldwide Gross (USD)") +
+  theme_minimal()
+
+
+```
 
 ### Rating
 #### **Rating VS Box Office**
@@ -134,7 +193,7 @@ RatingMean <- movies %>%
   summarise(avg = mean(gross, na.rm = TRUE)) 
 
 ggplot(RatingMean, aes(x = rating, y = avg, fill = rating))+
-  geom_bar(stat = "identity", color = "black")+
+  geom_bar(stat = "identity", color = "black", show.legend = FALSE)+
   geom_text(aes(label = scales::dollar(avg)), vjust = -0.5, size = 3) + 
   scale_y_continuous(labels = scales::dollar_format()) +
     scale_fill_manual(values = c("#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7", "#a0c4ff")) + 
@@ -153,8 +212,9 @@ ggplot(RatingMean, aes(x = rating, y = avg, fill = rating))+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(movies, aes(x = factor(rating), y = gross))+
-  geom_dotplot(binaxis = "y", stackdir = "up", position = "dodge", dotsize = 0.4)+
+  geom_dotplot(binaxis = "y", stackdir = "up", position = "dodge", dotsize = 0.3)+
    ylim(0, 1000000000)+
+  scale_y_continuous(labels = scales::dollar_format()) +
   labs(
     title = "Worldwide Gross Success by Rating",
     x = "Movie Rating",
@@ -165,7 +225,7 @@ ggplot(movies, aes(x = factor(rating), y = gross))+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(movies, aes(x = genre, y = gross, fill = genre)) +
-  geom_bar(stat = "identity", position = "dodge") +
+  geom_bar(stat = "identity", position = "dodge", show.legend = FALSE) +
   scale_y_continuous(labels = scales::dollar_format()) +
   facet_wrap(~ rating, scales = "free_x") +
   scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) +
