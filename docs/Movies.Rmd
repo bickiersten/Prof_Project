@@ -15,6 +15,8 @@ library(pander)
 library(scales)
 library(DT) 
 library(mosaic)
+library(treemapify)
+
 
 movies <- read_csv("~/Fall 2024/Professional Projects/Data/movies.csv")
 movies <- movies %>% 
@@ -23,16 +25,90 @@ movies <- movies %>%
 ```
 
 
-Movies have almost always been a go to topic to get conversations started, especially when meeting someone for the first time. It helps get a grasp on what others might be interested in, as well as possible movie recommendations. As I collected data for this, I tried to stick to more well known movies, but included movies from varying genres and ratings (G, PG, PG-13, R). Included in the data are 40 movies from each chosen genre, what each movie is rated, the audience score the movie has, and the success it had at the box office with it's worldwide gross. The data collected is all from [IMDb](https://www.imdb.com/)
+Movies have almost always been a go to topic to get conversations started, especially when meeting someone for the first time. It helps get a grasp on what others might be interested in, as well as possible movie recommendations. As I collected data for this, I tried to stick to more well known movies, but included movies from varying genres and ratings (G, PG, PG-13, R). Included in the data are 40 movies from each chosen genre, what each movie is rated, the audience score the movie has, and the success it had at the box office with it's worldwide gross. The data collected is all from [IMDb](https://www.imdb.com/).
 
 ## {.tabset .tabset-pills .tabset-fade}
 
 ### Genre
 #### **Genre VS Box Office**
 
+Genres are an important part of what a movie is gonna be like and determines if certain people are going to want to check it out or not. If a person really likes comedy, they're going to want to look into new comedy movies coming out soon. The genre of a movie is also ways that strangers understand the type of things that another person might be into and whether their tastes in movies are similar. I decided that with genres being so important to who will see a movie, I wanted to compare the different genres of movies to how well they do at the box office, mainly the worldwide gross that the movie genre obtains.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+movies <- movies %>%
+  mutate(gross = as.numeric(gsub("[^0-9]", "", gross)))
+
+GenreMean <- movies %>% 
+  group_by(genre) %>% 
+  summarise(avg = mean(gross, na.rm = TRUE)) 
+
+ggplot(GenreMean, aes(x = genre, y = avg, fill = genre))+
+  geom_bar(stat = "identity", color = "black")+
+  geom_text(aes(label = scales::dollar(avg)), vjust = -0.5, size = 2) + 
+  scale_y_continuous(labels = scales::dollar_format()) +
+    scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) + 
+  labs(
+    title = "Average Gross by Genre",
+    x = "Movie Genre",
+    y = "Average Gross (USD)",
+    fill = "Genre") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))
+  
+```
+The first thing I wanted to compare between the movie genres and the box office is which movie genre, based on the average, made the most worldwide gross. In order to do this, I grouped each of the movies by genre and calculated the average gross for each genre. The chart above shows this comparison, with the average gross of each genre labeled right above each bar. Just from looking at the graph, it can be seen that the movie genre that does the best in the box office, by quite a bit, is Action, with an average gross of $643,212,996. This is $238,198,207 more compared to the next highest movie genre of Musical, which has an average gross of $405,014,789. The lowest average gross that a movie genre has is the Horror genre, with an average gross of only $143,374,851. This is not necessarily surprising, as horror movies appeal to a much smaller group of people and action movies appeal to a broader group.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(movies, aes(x = genre, y = gross, fill = genre)) +
+  geom_boxplot() +
+  scale_y_continuous(labels = scales::dollar_format()) +
+  scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) +
+  labs(
+    title = "Distribution of Gross Earnings by Genre",
+    x = "Movie Genre",
+    y = "Gross Earnings (USD)",
+    fill = "Genre"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+movies_by_genre <- movies %>%
+  group_by(genre) %>%
+  summarise(total_gross = sum(gross, na.rm = TRUE)) %>%
+  ungroup()
+
+ggplot(movies_by_genre, aes(area = total_gross, fill = genre, label = genre)) +
+  geom_treemap() +
+  geom_treemap_text(fontface = "bold", color = "white", place = "centre") +
+  scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) +
+  labs(
+    title = "Proportion of Total Gross Earnings by Genre"
+  ) +
+  theme_minimal()
+```
+
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
-  
+ggplot(movies, aes(x = genre, y = gross, fill = genre)) +
+  geom_violin(trim = FALSE) +
+  scale_y_continuous(labels = scales::dollar_format()) +
+  scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) +
+  labs(
+    title = "Distribution of Gross Earnings by Genre",
+    x = "Movie Genre",
+    y = "Gross Earnings (USD)",
+    fill = "Genre"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 ```
 
 
@@ -41,6 +117,7 @@ Movies have almost always been a go to topic to get conversations started, espec
 ### Audience Score
 #### **Audience Scores VS Box Office**
 
+Something that many people go off of on whether they want to see a movie or not is how other people have rated it. 
 
 
 ### Rating
@@ -60,6 +137,7 @@ ggplot(RatingMean, aes(x = rating, y = avg, fill = rating))+
   geom_bar(stat = "identity", color = "black")+
   geom_text(aes(label = scales::dollar(avg)), vjust = -0.5, size = 3) + 
   scale_y_continuous(labels = scales::dollar_format()) +
+    scale_fill_manual(values = c("#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7", "#a0c4ff")) + 
   labs(
     title = "Average Gross by Movie Rating",
     x = "Movie Rating",
@@ -84,6 +162,24 @@ ggplot(movies, aes(x = factor(rating), y = gross))+
     theme_minimal()
 
 ```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(movies, aes(x = genre, y = gross, fill = genre)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(labels = scales::dollar_format()) +
+  facet_wrap(~ rating, scales = "free_x") +
+  scale_fill_manual(values = c("#7FFFD4", "#a8dadc", "#81b29a", "#56c6c6", "#b7e4c7","#609E60", "#a0c4ff", "#8CE68C","#68807B", "#DFF8EB" )) +
+  labs(
+    title = "Gross Earnings by Genre and Rating",
+    x = "Movie Genre",
+    y = "Gross Earnings (USD)",
+    fill = "Genre"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
 
 ### Data
 ```{r echo=FALSE, message=FALSE, warning=FALSE}

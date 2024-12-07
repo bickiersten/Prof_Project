@@ -7,3 +7,26 @@ output:
     toc_float: true
     highlight: zenburn
 ---
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(pander)
+library(scales)
+library(DT) 
+library(mosaic)
+
+IFweather <- read_csv("~/Fall 2024/Professional Projects/Data/weather.csv")
+IFweather <- IFweather %>% 
+  select(where(~ !all(is.na(.))))
+```
+
+## {.tabset .tabset-pills .tabset-fade}
+### Idaho Falls Weather
+Idaho Falls, Idaho, a place where, compared to many other places, there's ample snow, strong winds, and cold temperatures. The weather may not seem to always be predictable, but with the data that I was able to collect using [Weather Underground](https://www.wunderground.com/history/daily/us/id/idaho-falls/KIDIDAHO6/date/2024-1-6), I have put together an analysis comparing past and present weather patterns to help create a weather model predictor. 
+
+### Data
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+datatable(IFweather, options=list(lengthMenu = c(3,10,30)), extensions="Responsive")
+```
+##
