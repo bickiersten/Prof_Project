@@ -87,6 +87,7 @@ ggplot(IFweather, aes(x = day, y = avgtemp, color = month_name))+
     axis.text.x = element_text(angle = 45, hjust = 1), 
     strip.text = element_text(size = 12))
 ```
+
 The graphic above displays average daily temperatures for each month, with each line representing a year and color-coded by month for clarity. Within each month, there are three points for each day to show three years worth of average temperatures. The graph highlights temperature fluctuations in each months, emphasizing the variability in daily highs and lows throughout the seasons. For instance, winter months show consistently lower temperatures, while summer months show much higher daily temperatures. 
 
 In Idaho Falls, temperatures tend to start dropping mid-September for the fall season, and then, at the end of October, there is a noticeable decline in temperatures going into November. Then, we can see that temperatures start to warm up a little, with a lot of fluctuations, starting the end of February as the season changes from winter to spring. We can also see the days in which temperatures spiked to be lower than most days as well as when temperatures were higher compared to other years.  
@@ -174,9 +175,6 @@ Using the equation from above, you are able to get a predicted temperature using
 
 
 Something to keep in mind is that since this model relies on historical data, it assumes that future conditions will follow similar patterns to those in the past. Unusual weather phenomena or abrupt climate changes may reduce accuracy.
-
-
-
 
 
 
