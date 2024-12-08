@@ -11,7 +11,7 @@ output:
 
 ## Introduction
 
-For my project, I decided to complete two different analysis on topics that I am passionate about. The first analysis is under the "Movies" tab below where I collected data for many different movies. The second analysis is where I created a weather predicting model, in which I collected data
+For my project, I decided to complete two different analysis on topics that I am passionate about. The first analysis, which can be found below, is where I collected data for many different movies. The second analysis, which can also be found below, is where I created a weather predicting model, in which I collected three years of weather data for Idaho Falls, Idaho.
 
 View each analysis by following the links below:
 

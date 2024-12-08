@@ -6,6 +6,7 @@ output:
     toc: true
     toc_float: true
     highlight: zenburn
+runtime: shiny
 ---
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -16,6 +17,7 @@ library(scales)
 library(DT) 
 library(mosaic)
 library(readxl)
+library(shiny)
 
 IFweather <- read_excel("~/Fall 2024/Professional Projects/Data/weather.xlsx")
 IFweather <- IFweather <- IFweather <- IFweather %>% 
@@ -26,7 +28,6 @@ IFweather <- IFweather %>%
 
 IFweather <- IFweather %>%
   arrange(date) 
-
 
 ```
 
@@ -87,6 +88,9 @@ ggplot(IFweather, aes(x = day, y = avgtemp, color = month_name))+
     axis.text.x = element_text(angle = 45, hjust = 1), 
     strip.text = element_text(size = 12))
 ```
+The graphic above displays average daily temperatures for each month, with each line representing a year and color-coded by month for clarity. Within each month, there are three points for each day to show three years worth of average temperatures. The graph highlights temperature fluctuations in each months, emphasizing the variability in daily highs and lows throughout the seasons. For instance, winter months show consistently lower temperatures, while summer months show much higher daily temperatures. 
+
+In Idaho Falls, temperatures tend to start dropping mid-September for the fall season, and then, at the end of October, there is a noticeable decline in temperatures going into November. Then, we can see that temperatures start to warm up a little, with a lot of fluctuations, starting the end of February as the season changes from winter to spring. We can also see the days in which temperatures spiked to be lower than most days as well as when temperatures were higher compared to other years.  
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 IFweather$avgtemp <- as.numeric(IFweather$avgtemp)
@@ -102,7 +106,7 @@ ggplot(avgmonthtemp, aes(x = month_name, y = meantemp, fill = month_name))+
   scale_fill_manual(values = month_colors) + 
   labs(
     title = "Average Temperature by Month",
-    y = "Average Temperature",
+    y = "Average Temperature (Fahrenheit)",
     x = "Month") +
   theme_minimal() +
   theme(
@@ -110,6 +114,9 @@ ggplot(avgmonthtemp, aes(x = month_name, y = meantemp, fill = month_name))+
     plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))
 
 ```
+
+The above bar chart further emphasizes the findings found in the previous graphic by presenting the average monthly temperatures from three different years (2021 - 2024). It provides a clear comparison across the months, each month represented by a specific color for a clear visualization of the change. This overview demonstrates the coldest months are January, February, and December, while June, July, and August typically reach the highest average temperatures. The shape of the bar chart shows the seasonal change of temperatures, with winter months marked by the lowest values, spring and fall serving as transitional periods with moderate temperatures, and summer months reaching the highest temperatures.
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 IFweather$precip <- as.numeric(IFweather$precip)
 
@@ -131,9 +138,12 @@ ggplot(avgmonthprecip, aes(x = month_name, y = meanprecip))+
     values = c("Line" = "#5F9EA0", "Points" = "black"))
 ```
 
+The final graph in this section focuses on precipitation. Using a line and point combination, it illustrates the average monthly precipitation over the three recorded years. The data reveals seasonal precipitation trends, such as higher rainfall in spring months, contrasted with drier summer periods. It can be seen that July has the lowest amount of average precipitation than any other month. In contrast, May has a noticeable spike of average precipitation, indicating a period of increased precipitation. There is a steady rise in precipitation during the late winter months and early spring months, a decline in the summer months, followed by another increase in precipitation during the autumn months. This pattern reflects the influence of seasonal changes on average precipitation, with wetter periods in spring and fall and drier conditions in summer.
+
 
 ### Predictor
 
+Building upon these patterns, I developed a predictive model to estimate future temperatures based on historical and lagged weather metrics, including dew point and sea level pressure. The linear regression model uses these variables to predict average temperatures three days ahead. Below is the output of this linear regression model. 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 IFweatherlag <- IFweather %>%
@@ -153,11 +163,46 @@ summary(mylm) %>%
 
 ```
 
+From the outputs I got from this linear regression model, I was able to put together the equation for this weather model predictor. 
 
 
 $$
   \underbrace{\hat{Y}_i}_\text{Predicted Temp} = \overbrace{-36.37}^\text{est. y-int} + {1.357} \underbrace{X_i}_\text{Dew Point} + {1.595}\underbrace{X_i}_\text{Sea Level Pressure}
 $$
+
+Using the equation from above, I was able to create the following weather model predictor. Using three day lagged data for the dew point and the sea level pressure, you can input these factors and the model will give you a predicted temperature. It is important to use lagged data as if you try to substitute current dew point and sea level pressure values into this model, the predictions will not align with the trained relationships. We are able to see how this model demonstrates the type of impacts key weather variables, like dew point and sea level pressure, have on the influence of temperature.
+
+
+Something to keep in mind is that since this model relies on historical data, it assumes that future conditions will follow similar patterns to those in the past. Unusual weather phenomena or abrupt climate changes may reduce accuracy.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ui <- fluidPage(
+    titlePanel("Temperature Predictor"),
+    sidebarLayout(
+        sidebarPanel(
+            numericInput("dew", "Enter Dew Point:", value = 50, min = -50, max = 100),
+            numericInput("sea", "Enter Sea Level Pressure:", value = 1015, min = 900, max = 1100),
+            actionButton("predict", "Predict Temperature")),
+        mainPanel(
+            h3("Predicted Temperature"),
+            verbatimTextOutput("result"))))
+
+server <- function(input, output) {
+    intercept <- -36.37
+    coef_dew <- 1.357
+    coef_sea <- 1.595
+    
+    predict_temp <- reactive({
+        req(input$predict)  
+        input$dew * coef_dew + input$sea * coef_sea + intercept})
+    
+    output$result <- renderText({
+        round(predict_temp(), 2)})}
+
+shinyApp(ui = ui, server = server)
+
+```
+
 
 
 
