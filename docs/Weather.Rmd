@@ -6,7 +6,7 @@ output:
     toc: true
     toc_float: true
     highlight: zenburn
-runtime: shiny
+    runtime: shiny
 ---
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -170,10 +170,13 @@ $$
   \underbrace{\hat{Y}_i}_\text{Predicted Temp} = \overbrace{-36.37}^\text{est. y-int} + {1.357} \underbrace{X_i}_\text{Dew Point} + {1.595}\underbrace{X_i}_\text{Sea Level Pressure}
 $$
 
+
 Using the equation from above, I was able to create the following weather model predictor. Using three day lagged data for the dew point and the sea level pressure, you can input these factors and the model will give you a predicted temperature. It is important to use lagged data as if you try to substitute current dew point and sea level pressure values into this model, the predictions will not align with the trained relationships. We are able to see how this model demonstrates the type of impacts key weather variables, like dew point and sea level pressure, have on the influence of temperature.
 
 
 Something to keep in mind is that since this model relies on historical data, it assumes that future conditions will follow similar patterns to those in the past. Unusual weather phenomena or abrupt climate changes may reduce accuracy.
+
+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ui <- fluidPage(
