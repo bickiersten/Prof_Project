@@ -170,27 +170,10 @@ $$
 $$
 
 
-Using the equation from above, I was able to create the following weather model predictor. Using three day lagged data for the dew point and the sea level pressure, you can input these factors and the model will give you a predicted temperature. It is important to use lagged data as if you try to substitute current dew point and sea level pressure values into this model, the predictions will not align with the trained relationships. We are able to see how this model demonstrates the type of impacts key weather variables, like dew point and sea level pressure, have on the influence of temperature.
+Using the equation from above, you are able to get a predicted temperature using three day lagged data for the dew point and the sea level pressure. It is important to use lagged data as if you try to substitute current dew point and sea level pressure values into this model, the predictions will not align with the trained relationships. We are able to see how this model demonstrates the type of impacts key weather variables, like dew point and sea level pressure, have on the influence of temperature.
 
 
 Something to keep in mind is that since this model relies on historical data, it assumes that future conditions will follow similar patterns to those in the past. Unusual weather phenomena or abrupt climate changes may reduce accuracy.
-
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-intercept <- -36.37
-coef_dew <- 1.357
-coef_sea <- 1.595
-
-cat("Enter Dew Point (°F): ")
-dew <- as.numeric(readline())
-cat("Enter Sea Level Pressure (hPa): ")
-sea <- as.numeric(readline())
-
-predicted_temp <- intercept + coef_dew * dew + coef_sea * sea
-
-cat(sprintf("Predicted Temperature: %.2f °F\n", predicted_temp))
-```
-
 
 
 
