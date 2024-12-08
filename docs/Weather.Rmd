@@ -176,34 +176,21 @@ Using the equation from above, I was able to create the following weather model 
 Something to keep in mind is that since this model relies on historical data, it assumes that future conditions will follow similar patterns to those in the past. Unusual weather phenomena or abrupt climate changes may reduce accuracy.
 
 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+intercept <- -36.37
+coef_dew <- 1.357
+coef_sea <- 1.595
 
-```{html echo=FALSE}
-<div>
-  <label for="dew">Enter Dew Point (°F):</label>
-  <input type="number" id="dew" min="-50" max="100" value="50">
-  <br>
-  <label for="sea">Enter Sea Level Pressure (hPa):</label>
-  <input type="number" id="sea" min="900" max="1100" value="1015">
-  <br><br>
-  <button onclick="predictTemperature()">Predict Temperature</button>
-  <p><strong>Predicted Temperature:</strong> <span id="prediction">--</span> °F</p>
-</div>
-  
-<script>
-function predictTemperature() {
-    const intercept = -36.37;
-    const coefDew = 1.357;
-    const coefSea = 1.595;
+cat("Enter Dew Point (°F): ")
+dew <- as.numeric(readline())
+cat("Enter Sea Level Pressure (hPa): ")
+sea <- as.numeric(readline())
 
-    const dew = parseFloat(document.getElementById("dew").value);
-    const sea = parseFloat(document.getElementById("sea").value);
+predicted_temp <- intercept + coef_dew * dew + coef_sea * sea
 
-    const predictedTemp = intercept + coefDew * dew + coefSea * sea;
-
-    document.getElementById("prediction").innerText = predictedTemp.toFixed(2);
-  }
-</script>
+cat(sprintf("Predicted Temperature: %.2f °F\n", predicted_temp))
 ```
+
 
 
 
