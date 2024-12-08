@@ -61,6 +61,8 @@ ggplot(movies, aes(x = genre, y = gross, fill = genre)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
+
+
 As I started looking at my findings and figuring out how I could compare a movie's genre to how well it did at the box office, I decided to create a box plot graphic. Box plots are great when wanting to compare the distribution of things such as this. From looking at the above box plots, we can determine that a majority of movies within a genre tend to make less that $1,000,000,000 in worldwide gross. It can also be seen that there are a few outliers in a couple genres that make more than the rest, like three movies reaching over $2,000,000,000 in worldwide gross for Action, Drama, and Science Fiction.
 
 
@@ -126,6 +128,8 @@ ggplot(GenreMean, aes(x = genre, y = avg, fill = genre))+
     plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))
   
 ```
+
+
 The final thing I wanted to do in order to compare the movie genres and the box office is figure out which movie genre, based on the average, made the most worldwide gross. In order to do this, I grouped each of the movies by genre and calculated the average gross for each genre. The chart above shows this comparison, with the average gross of each genre labeled right above each bar. Just from looking at the graph, it can be seen that the movie genre that does the best in the box office, by quite a bit, is Action, with an average gross of $643,212,996. This is $238,198,207 more compared to the next highest movie genre of Musical, which has an average gross of $405,014,789. The lowest average gross that a movie genre has is the Horror genre, with an average gross of only $143,374,851. This is not necessarily surprising, as horror movies appeal to a much smaller group of people and action movies appeal to a broader group.
 
 #### **Conclusion**
